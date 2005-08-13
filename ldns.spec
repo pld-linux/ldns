@@ -1,3 +1,7 @@
+#
+# Conditional build:
+%bcond_without	static_libs # don't build static libraries
+#
 Summary:	ldns is a library with the aim to simplify DNS programing in C
 Summary(pl):	ldns jest bibliotek± maj±c± na celu uproszczenie programowania DNS w C
 Name:		ldns
@@ -54,7 +58,8 @@ Statyczna biblioteka ldns.
 %{__aclocal}
 %{__autoconf}
 %{__autoheader}
-%configure
+%configure \
+	%{!?with_static_libs:--enable-static=no}
 %{__make}
 %{__make} doc
 
@@ -83,6 +88,8 @@ rm -rf $RPM_BUILD_ROOT
 # don't remove `.gz' (because you'll get plenty of dead symlinks)
 %{_mandir}/man3/*.gz
 
+%if %{with static_libs}
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/lib*.a
+%endif
