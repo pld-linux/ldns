@@ -2,8 +2,8 @@
 # Conditional build:
 %bcond_without	static_libs # don't build static libraries
 #
-Summary:	ldns is a library with the aim to simplify DNS programing in C
-Summary(pl):	ldns jest bibliotek± maj±c± na celu uproszczenie programowania DNS w C
+Summary:	ldns - a library with the aim to simplify DNS programing in C
+Summary(pl):	ldns - biblioteka maj±ca na celu uproszczenie programowania DNS w C
 Name:		ldns
 Version:	0.70
 Release:	0.1
@@ -14,6 +14,7 @@ Source0:	http://www.nlnetlabs.nl/downloads/%{name}-%{version}.tar.gz
 Patch0:		%{name}-DESTDIR.patch
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf
+BuildRequires:	automake
 BuildRequires:	libtool
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
