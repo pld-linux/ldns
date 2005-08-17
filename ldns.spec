@@ -12,10 +12,12 @@ Group:		Libraries
 Source0:	http://www.nlnetlabs.nl/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	d94b88a090aaba2e6b79d02b4eb4752f
 Patch0:		%{name}-DESTDIR.patch
+Patch1:		%{name}-ssl.patch
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool
+BuildRequires:	openssl-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -31,6 +33,7 @@ Summary:	Header files for ldns library
 Summary(pl):	Pliki nag³ówkowe biblioteki ldns
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	openssl-devel
 
 %description devel
 Header files for ldns library.
@@ -53,6 +56,7 @@ Statyczna biblioteka ldns.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__libtoolize}
@@ -63,6 +67,14 @@ Statyczna biblioteka ldns.
 	%{!?with_static_libs:--enable-static=no}
 %{__make}
 %{__make} doc
+
+# change symlinks into .so redirects
+cd doc/man/man3
+for f in `find . -type l`; do
+	d=`readlink $f`
+	rm -f $f
+	echo ".so $d" > $f
+done
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -86,8 +98,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/lib*.la
 %{_includedir}/%{name}
-# don't remove `.gz' (because you'll get plenty of dead symlinks)
-%{_mandir}/man3/*.gz
+%{_mandir}/man3/*.3*
 
 %if %{with static_libs}
 %files static
