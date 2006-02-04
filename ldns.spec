@@ -5,17 +5,16 @@
 Summary:	ldns - a library with the aim to simplify DNS programing in C
 Summary(pl):	ldns - biblioteka maj±ca na celu uproszczenie programowania DNS w C
 Name:		ldns
-Version:	0.70
+Version:	1.0.1
 Release:	0.1
 License:	GPL
 Group:		Libraries
 Source0:	http://www.nlnetlabs.nl/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	d94b88a090aaba2e6b79d02b4eb4752f
-Patch0:		%{name}-DESTDIR.patch
-Patch1:		%{name}-ssl.patch
+# Source0-md5:	39210ff3bb2673d57e024f7908d31be5
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf
 BuildRequires:	automake
+BuildRequires:	doxygen
 BuildRequires:	libtool
 BuildRequires:	openssl-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -55,8 +54,6 @@ Statyczna biblioteka ldns.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
 %{__libtoolize}
@@ -64,7 +61,7 @@ Statyczna biblioteka ldns.
 %{__autoconf}
 %{__autoheader}
 %configure \
-	%{!?with_static_libs:--enable-static=no}
+	--enable-static=%{?with_static_libs:yes}%{!?with_static_libs:no}
 %{__make}
 %{__make} doc
 
@@ -90,11 +87,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc Changelog COMPILE DEADJOE ProgrammingPhilosophy README ROADMAP TODO
-%attr(755,root,root) %{_libdir}/lib*.so.*.*.*
+%doc Changelog ProgrammingPhilosophy README ROADMAP TODO
+%attr(755,root,root) %{_libdir}/lib*-*.*.*.so
 
 %files devel
 %defattr(644,root,root,755)
+%doc doc/{*.html,LDNS_API,overview,PacketTypes,dns-lib-implementations,function_manpages,ldns_manpages,CodingStyle,html}
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/lib*.la
 %{_includedir}/%{name}
