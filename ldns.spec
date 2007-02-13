@@ -3,7 +3,7 @@
 %bcond_without	static_libs # don't build static libraries
 #
 Summary:	ldns - a library with the aim to simplify DNS programing in C
-Summary(pl.UTF-8):   ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
+Summary(pl.UTF-8):	ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
 Name:		ldns
 Version:	1.0.1
 Release:	0.1
@@ -29,7 +29,7 @@ Jest w dużym stopniu oparta na module Perla Net::DNS.
 
 %package devel
 Summary:	Header files for ldns library
-Summary(pl.UTF-8):   Pliki nagłówkowe biblioteki ldns
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki ldns
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	openssl-devel
@@ -42,7 +42,7 @@ Pliki nagłówkowe biblioteki ldns.
 
 %package static
 Summary:	Static ldns library
-Summary(pl.UTF-8):   Statyczna biblioteka ldns
+Summary(pl.UTF-8):	Statyczna biblioteka ldns
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
