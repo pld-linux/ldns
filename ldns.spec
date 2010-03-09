@@ -5,12 +5,12 @@
 Summary:	ldns - a library with the aim to simplify DNS programing in C
 Summary(pl.UTF-8):	ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
 Name:		ldns
-Version:	1.0.1
+Version:	1.6.4
 Release:	0.1
 License:	GPL
 Group:		Libraries
 Source0:	http://www.nlnetlabs.nl/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	39210ff3bb2673d57e024f7908d31be5
+# Source0-md5:	6747d7bd96552ee5d8943f3abb24815f
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -87,12 +87,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc Changelog ProgrammingPhilosophy README ROADMAP TODO
-%attr(755,root,root) %{_libdir}/lib*-*.*.*.so
+%doc Changelog README
+%attr(755,root,root) %{_libdir}/libldns.so.*.*.*
 
 %files devel
 %defattr(644,root,root,755)
-%doc doc/{*.html,LDNS_API,overview,PacketTypes,dns-lib-implementations,function_manpages,ldns_manpages,CodingStyle,html}
+%doc doc/{*.html,dns-lib-implementations,function_manpages,ldns_manpages,CodingStyle}
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/lib*.la
 %{_includedir}/%{name}
