@@ -9,7 +9,7 @@ Version:	1.6.4
 Release:	0.1
 License:	GPL
 Group:		Libraries
-Source0:	http://www.nlnetlabs.nl/downloads/%{name}-%{version}.tar.gz
+Source0:	http://www.nlnetlabs.nl/downloads/ldns/%{name}-%{version}.tar.gz
 # Source0-md5:	6747d7bd96552ee5d8943f3abb24815f
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf
