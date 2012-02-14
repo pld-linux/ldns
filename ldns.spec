@@ -5,12 +5,12 @@
 Summary:	ldns - a library with the aim to simplify DNS programing in C
 Summary(pl.UTF-8):	ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
 Name:		ldns
-Version:	1.6.10
-Release:	2
+Version:	1.6.12
+Release:	1
 License:	GPL
 Group:		Libraries
 Source0:	http://www.nlnetlabs.nl/downloads/ldns/%{name}-%{version}.tar.gz
-# Source0-md5:	fadf8e38fbd2d3434a2c46097d9932d5
+# Source0-md5:	e7428ed0d19baed02459e2c55660c9b3
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf
 BuildRequires:	automake
