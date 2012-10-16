@@ -72,6 +72,20 @@ Python interface do ldns library.
 %description -n python-ldns -l pl.UTF-8
 Pythonowy interfejs do biblioteki ldns.
 
+%package -n drill
+Summary:	drill - tool to get all sorts of information out of the DNS(SEC)
+Summary(pl.UTF-8):	drill - narzędzie do pobierania dowolnych informacji z DNS(SEC)
+Group:		Applications/Network
+Requires:	%{name} = %{version}-%{release}
+
+%description -n drill
+drill is a tool to get all sorts of information out of the DNS. It is
+specifically designed to be used with DNSSEC.
+
+%description -n drill -l pl.UTF-8
+drill to narzędzie do pobierania dowolnych informacji z DNS. Jest
+zaprojektowane szczególnie z myślą o użyciu z DNSSEC.
+
 %prep
 %setup -q
 
@@ -82,6 +96,7 @@ Pythonowy interfejs do biblioteki ldns.
 %{__autoheader}
 %configure \
 	--enable-static%{!?with_static_libs:=no} \
+	--with-drill \
 	%{?with_python:--with-pyldns}
 %{__make}
 %{__make} doc
@@ -145,3 +160,8 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitedir}/ldns.py[co]
 %{py_sitedir}/ldnsx.py[co]
 %endif
+
+%files -n drill
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/drill
+%{_mandir}/man1/drill.1*
