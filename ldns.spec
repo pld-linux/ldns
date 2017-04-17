@@ -1,25 +1,31 @@
+# TODO: drop dane bcond after switch to openssl 1.1.0
 #
 # Conditional build:
+%bcond_with	dane		# OpenSSL DANE functions for verification (requires openssl >= 1.1.0)
 %bcond_without	static_libs	# don't build static libraries
 %bcond_without	python		# Python modules
 #
 Summary:	ldns - a library with the aim to simplify DNS programing in C
 Summary(pl.UTF-8):	ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
 Name:		ldns
-Version:	1.6.17
-Release:	3
+Version:	1.7.0
+Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://www.nlnetlabs.nl/downloads/ldns/%{name}-%{version}.tar.gz
-# Source0-md5:	a79423bcc4129e6d59b616b1cae11e5e
-Patch0:		gen-manpages.patch
-Patch1:		python-install.patch
+# Source0-md5:	74b75c9ba69fb3af2a0c26244ecfd9f6
+Patch0:		python-install.patch
+Patch1:		%{name}-link.patch
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf >= 2.56
 BuildRequires:	automake
 BuildRequires:	doxygen
-BuildRequires:	libtool
+BuildRequires:	libtool >= 2:2
+%if %{with dane}
+BuildRequires:	openssl-devel >= 1.1.0
+%else
 BuildRequires:	openssl-devel >= 1.0.0
+%endif
 %if %{with python}
 BuildRequires:	python-devel >= 1:2.4.0
 BuildRequires:	rpmbuild(macros) >= 1.219
@@ -42,7 +48,11 @@ Summary:	Header files for ldns library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki ldns
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+%if %{with dane}
+Requires:	openssl-devel >= 1.1.0
+%else
 Requires:	openssl-devel >= 1.0.0
+%endif
 
 %description devel
 Header files for ldns library.
@@ -99,6 +109,7 @@ zaprojektowane szczególnie z myślą o użyciu z DNSSEC.
 %{__autoconf}
 %{__autoheader}
 %configure \
+	%{!?with_dane:--disable-dane-ta-usage} \
 	--enable-static%{!?with_static_libs:=no} \
 	--with-drill \
 	%{?with_python:--with-pyldns}
@@ -139,7 +150,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc Changelog LICENSE README
 %attr(755,root,root) %{_libdir}/libldns.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libldns.so.1
+%attr(755,root,root) %ghost %{_libdir}/libldns.so.2
 
 %files devel
 %defattr(644,root,root,755)

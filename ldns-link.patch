@@ -1,0 +1,22 @@
+--- ldns-1.7.0/ax_python_devel.m4.orig	2017-04-17 10:21:17.538303304 +0200
++++ ldns-1.7.0/ax_python_devel.m4	2017-04-17 10:27:08.141632634 +0200
+@@ -227,7 +227,7 @@
+ 		then
+ 			# use the official shared library
+ 			ac_python_library=`echo "$ac_python_library" | sed "s/^lib//"`
+-			PYTHON_LDFLAGS="-L$ac_python_libdir -l$ac_python_library"
++			PYTHON_LDFLAGS="-l$ac_python_library"
+ 		else
+ 			# old way: use libpython from python_configdir
+ 			ac_python_libdir=`$PYTHON -c \
+--- ldns-1.7.0/Makefile.in.orig	2016-12-20 11:48:22.000000000 +0100
++++ ldns-1.7.0/Makefile.in	2017-04-17 10:27:36.031632314 +0200
+@@ -286,7 +286,7 @@
+ 	$(COMP_LIB) -I./include/ldns $(LIBSSL_CPPFLAGS) $(PYTHON_CPPFLAGS) $(PYTHON_X_CFLAGS) -c $(pywrapdir)/ldns_wrapper.c -o $@
+ 
+ _ldns.la: ldns_wrapper.lo libldns.la 
+-	$(LIBTOOL) --tag=CC --mode=link $(CC) $(CFLAGS) $(PYTHON_CFLAGS) $(LDFLAGS) $(PYTHON_LDFLAGS) -module -version-info $(version_info) -no-undefined -o $@ ldns_wrapper.lo -rpath $(python_site) -L. -L.libs -lldns $(LIBS)
++	$(LIBTOOL) --tag=CC --mode=link $(CC) $(CFLAGS) $(PYTHON_CFLAGS) $(LDFLAGS) -module -version-info $(version_info) -no-undefined -o $@ ldns_wrapper.lo -rpath $(python_site) libldns.la $(PYTHON_LDFLAGS) $(LIBS)
+ 
+ $(p5_dns_ldns_dir)/Makefile: $(p5_dns_ldns_dir)/Makefile.PL
+ 	BUILDDIR=`pwd`; cd $(p5_dns_ldns_dir); LD_LIBRARY_PATH="$$BUILDDIR/.libs:$$LD_LIBRARY_PATH" DYLD_LIBRARY_PATH="$$BUILDDIR/.libs:$$DYLD_LIBRARY_PATH" $(PERL) Makefile.PL LIBS="-L$$BUILDDIR/.libs -lldns" INC="-I$$BUILDDIR"
