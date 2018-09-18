@@ -1,7 +1,6 @@
-# TODO: drop dane bcond after switch to openssl 1.1.0
 #
 # Conditional build:
-%bcond_with	dane		# OpenSSL DANE functions for verification (requires openssl >= 1.1.0)
+%bcond_without	dane		# OpenSSL DANE functions for verification (requires openssl >= 1.1.0)
 %bcond_without	static_libs	# don't build static libraries
 %bcond_without	python		# Python modules
 #
@@ -9,7 +8,7 @@ Summary:	ldns - a library with the aim to simplify DNS programing in C
 Summary(pl.UTF-8):	ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
 Name:		ldns
 Version:	1.7.0
-Release:	3
+Release:	4
 License:	BSD
 Group:		Libraries
 Source0:	http://www.nlnetlabs.nl/downloads/ldns/%{name}-%{version}.tar.gz
@@ -124,6 +123,7 @@ nie będa wspierane.
 %{__autoconf}
 %{__autoheader}
 %configure \
+	--enable-gost-anyway \
 	%{!?with_dane:--disable-dane-ta-usage} \
 	--enable-static%{!?with_static_libs:=no} \
 	--with-drill \
