@@ -7,14 +7,15 @@
 Summary:	ldns - a library with the aim to simplify DNS programing in C
 Summary(pl.UTF-8):	ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
 Name:		ldns
-Version:	1.7.0
-Release:	4
+Version:	1.7.1
+Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://www.nlnetlabs.nl/downloads/ldns/%{name}-%{version}.tar.gz
-# Source0-md5:	74b75c9ba69fb3af2a0c26244ecfd9f6
+# Source0-md5:	166262a46995d9972aba417fd091acd5
 Patch0:		python-install.patch
 Patch1:		%{name}-link.patch
+Patch100:	git.patch
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf >= 2.56
 BuildRequires:	automake
@@ -114,6 +115,7 @@ nie będa wspierane.
 
 %prep
 %setup -q
+%patch100 -p1
 %patch0 -p1
 %patch1 -p1
 
@@ -123,6 +125,7 @@ nie będa wspierane.
 %{__autoconf}
 %{__autoheader}
 %configure \
+	--with-examples \
 	--enable-gost-anyway \
 	%{!?with_dane:--disable-dane-ta-usage} \
 	--enable-static%{!?with_static_libs:=no} \
@@ -130,15 +133,6 @@ nie będa wspierane.
 	%{?with_python:--with-pyldns}
 %{__make}
 %{__make} doc
-
-cd examples
-%{__libtoolize}
-%{__aclocal}
-%{__autoconf}
-%{__autoheader}
-%configure
-%{__make}
-cd ..
 
 # change symlinks into .so redirects
 cd doc/man/man3
@@ -164,11 +158,6 @@ rm -rf $RPM_BUILD_ROOT
 %py_postclean
 %endif
 
-cd examples
-%{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
-cd ..
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -179,7 +168,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc Changelog LICENSE README
 %attr(755,root,root) %{_libdir}/libldns.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libldns.so.2
+%attr(755,root,root) %ghost %{_libdir}/libldns.so.1
 
 %files devel
 %defattr(644,root,root,755)
@@ -187,6 +176,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/ldns-config
 %attr(755,root,root) %{_libdir}/libldns.so
 %{_libdir}/libldns.la
+%{_pkgconfigdir}/ldns.pc
 %{_includedir}/%{name}
 %{_mandir}/man1/ldns-config.1*
 %{_mandir}/man3/ldns_*.3*
