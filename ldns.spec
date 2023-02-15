@@ -1,35 +1,31 @@
+# NOTE: included perl-DNS-LDNS module (--with-p5-dns-ldns) is older than in separate spec (0.61 vs 0.63)
 #
 # Conditional build:
-%bcond_without	dane		# OpenSSL DANE functions for verification (requires openssl >= 1.1.0)
-%bcond_without	static_libs	# don't build static libraries
+%bcond_without	static_libs	# static library
 %bcond_without	python		# Python modules
 #
 Summary:	ldns - a library with the aim to simplify DNS programing in C
 Summary(pl.UTF-8):	ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
 Name:		ldns
-Version:	1.7.1
+Version:	1.8.3
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://www.nlnetlabs.nl/downloads/ldns/%{name}-%{version}.tar.gz
-# Source0-md5:	166262a46995d9972aba417fd091acd5
+# Source0-md5:	429b93dacb2d6ecc5ed63788b14c38e6
 Patch0:		python-install.patch
 Patch1:		%{name}-link.patch
-Patch100:	git.patch
 URL:		http://www.nlnetlabs.nl/ldns/
 BuildRequires:	autoconf >= 2.56
 BuildRequires:	automake
 BuildRequires:	doxygen
 BuildRequires:	libtool >= 2:2
-%if %{with dane}
 BuildRequires:	openssl-devel >= 1.1.0
-%else
-BuildRequires:	openssl-devel >= 1.0.0
-%endif
 %if %{with python}
 BuildRequires:	python-devel >= 1:2.4.0
+BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.219
-BuildRequires:	swig-python
+BuildRequires:	swig-python >= 2.0.4
 %endif
 Requires:	openssl >= 1.0.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -48,11 +44,7 @@ Summary:	Header files for ldns library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki ldns
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-%if %{with dane}
 Requires:	openssl-devel >= 1.1.0
-%else
-Requires:	openssl-devel >= 1.0.0
-%endif
 
 %description devel
 Header files for ldns library.
@@ -99,8 +91,8 @@ drill to narzędzie do pobierania dowolnych informacji z DNS. Jest
 zaprojektowane szczególnie z myślą o użyciu z DNSSEC.
 
 %package tools
-Summary:	Example tools for ldns.
-Summary(pl.UTF-8):	Przykładowe narzędzie wykorzystujące ldns.
+Summary:	Example tools for ldns
+Summary(pl.UTF-8):	Przykładowe narzędzie wykorzystujące ldns
 Group:		Applications/Network
 Requires:	%{name} = %{version}-%{release}
 
@@ -115,7 +107,6 @@ nie będa wspierane.
 
 %prep
 %setup -q
-%patch100 -p1
 %patch0 -p1
 %patch1 -p1
 
@@ -127,7 +118,6 @@ nie będa wspierane.
 %configure \
 	--with-examples \
 	--enable-gost-anyway \
-	%{!?with_dane:--disable-dane-ta-usage} \
 	--enable-static%{!?with_static_libs:=no} \
 	--with-drill \
 	%{?with_python:--with-pyldns}
@@ -147,6 +137,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+# obsoleted by pkg-config
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libldns.la
 
 %if %{with python}
 %{__rm} $RPM_BUILD_ROOT%{py_sitedir}/_ldns.la
@@ -168,14 +161,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc Changelog LICENSE README
 %attr(755,root,root) %{_libdir}/libldns.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libldns.so.1
+%attr(755,root,root) %ghost %{_libdir}/libldns.so.3
 
 %files devel
 %defattr(644,root,root,755)
 %doc doc/{*.html,dns-lib-implementations,function_manpages,ldns_manpages,CodingStyle}
 %attr(755,root,root) %{_bindir}/ldns-config
 %attr(755,root,root) %{_libdir}/libldns.so
-%{_libdir}/libldns.la
 %{_pkgconfigdir}/ldns.pc
 %{_includedir}/%{name}
 %{_mandir}/man1/ldns-config.1*
