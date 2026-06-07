@@ -2,21 +2,22 @@
 #
 # Conditional build:
 %bcond_without	static_libs	# static library
-%bcond_without	python		# Python modules
+%bcond_without	python2		# Python 2.x modules
+%bcond_without	python3		# Python 3.x modules
 #
 Summary:	ldns - a library with the aim to simplify DNS programing in C
 Summary(pl.UTF-8):	ldns - biblioteka mająca na celu uproszczenie programowania DNS w C
 Name:		ldns
-Version:	1.8.3
+Version:	1.9.0
 Release:	1
 License:	BSD
 Group:		Libraries
-Source0:	http://www.nlnetlabs.nl/downloads/ldns/%{name}-%{version}.tar.gz
-# Source0-md5:	429b93dacb2d6ecc5ed63788b14c38e6
+Source0:	https://www.nlnetlabs.nl/downloads/ldns/%{name}-%{version}.tar.gz
+# Source0-md5:	895ccabbeadf67fe72fdf07c6a5e2a1a
 Patch0:		python-install.patch
 Patch1:		%{name}-link.patch
-URL:		http://www.nlnetlabs.nl/ldns/
-BuildRequires:	autoconf >= 2.56
+URL:		https://www.nlnetlabs.nl/projects/ldns/about/
+BuildRequires:	autoconf >= 2.71
 BuildRequires:	automake
 BuildRequires:	doxygen
 BuildRequires:	libtool >= 2:2
@@ -65,16 +66,28 @@ Static ldns library.
 Statyczna biblioteka ldns.
 
 %package -n python-ldns
-Summary:	Python interface do ldns library
-Summary(pl.UTF-8):	Pythonowy interfejs do biblioteki ldns
+Summary:	Python 2 interface do ldns library
+Summary(pl.UTF-8):	Interfejs Pythona 2 do biblioteki ldns
 Group:		Libraries/Python
 Requires:	%{name} = %{version}-%{release}
 
 %description -n python-ldns
-Python interface do ldns library.
+Python 2 interface do ldns library.
 
 %description -n python-ldns -l pl.UTF-8
-Pythonowy interfejs do biblioteki ldns.
+Interfejs Pythona 2 do biblioteki ldns.
+
+%package -n python3-ldns
+Summary:	Python 3 interface do ldns library
+Summary(pl.UTF-8):	Interfejs Pythona 3 do biblioteki ldns
+Group:		Libraries/Python
+Requires:	%{name} = %{version}-%{release}
+
+%description -n python3-ldns
+Python 3 interface do ldns library.
+
+%description -n python3-ldns -l pl.UTF-8
+Interfejs Pythona 3 do biblioteki ldns.
 
 %package -n drill
 Summary:	drill - tool to get all sorts of information out of the DNS(SEC)
@@ -112,16 +125,35 @@ nie będa wspierane.
 
 %build
 %{__libtoolize}
-%{__aclocal}
+%{__aclocal} -I m4
 %{__autoconf}
 %{__autoheader}
+%define configuredir ..
+%if %{with python2}
+install -d build-py2
+cd build-py2
 %configure \
-	--with-examples \
+	PYTHON=%{__python} \
+	--enable-gost-anyway \
+	--disable-static \
+	--without-drill \
+	--without-examples \
+	--with-pyldns
+%{__make}
+cd ..
+%endif
+
+install -d build
+cd build
+%configure \
+	PYTHON=%{__python3} \
 	--enable-gost-anyway \
 	--enable-static%{!?with_static_libs:=no} \
 	--with-drill \
-	%{?with_python:--with-pyldns}
+	--with-examples \
+	%{?with_python3:--with-pyldns}
 %{__make}
+
 %{__make} doc
 
 # change symlinks into .so redirects
@@ -135,20 +167,31 @@ done
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} install \
+%if %{with python2}
+%{__make} -C build-py2 install \
+	DESTDIR=$RPM_BUILD_ROOT
+%endif
+
+%{__make} -C build install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 # obsoleted by pkg-config
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libldns.la
 
-%if %{with python}
+%if %{with python2}
 %{__rm} $RPM_BUILD_ROOT%{py_sitedir}/_ldns.la
-%if %{with static_libs}
-%{__rm} $RPM_BUILD_ROOT%{py_sitedir}/_ldns.a
-%endif
 %py_comp $RPM_BUILD_ROOT%{py_sitedir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
 %py_postclean
+%endif
+
+%if %{with python3}
+%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/_ldns.la
+%if %{with static_libs}
+%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/_ldns.a
+%endif
+%py3_comp $RPM_BUILD_ROOT%{py3_sitedir}
+%py3_ocomp $RPM_BUILD_ROOT%{py3_sitedir}
 %endif
 
 %clean
@@ -160,16 +203,16 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc Changelog LICENSE README
-%attr(755,root,root) %{_libdir}/libldns.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libldns.so.3
+%{_libdir}/libldns.so.*.*.*
+%ghost %{_libdir}/libldns.so.3
 
 %files devel
 %defattr(644,root,root,755)
 %doc doc/{*.html,dns-lib-implementations,function_manpages,ldns_manpages,CodingStyle}
 %attr(755,root,root) %{_bindir}/ldns-config
-%attr(755,root,root) %{_libdir}/libldns.so
+%{_libdir}/libldns.so
 %{_pkgconfigdir}/ldns.pc
-%{_includedir}/%{name}
+%{_includedir}/ldns
 %{_mandir}/man1/ldns-config.1*
 %{_mandir}/man3/ldns_*.3*
 
@@ -179,12 +222,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libldns.a
 %endif
 
-%if %{with python}
+%if %{with python2}
 %files -n python-ldns
 %defattr(644,root,root,755)
-%attr(755,root,root) %{py_sitedir}/_ldns.so*
+%{py_sitedir}/_ldns.so*
 %{py_sitedir}/ldns.py[co]
 %{py_sitedir}/ldnsx.py[co]
+%endif
+
+%if %{with python3}
+%files -n python3-ldns
+%defattr(644,root,root,755)
+%{py3_sitedir}/_ldns.so*
+%{py3_sitedir}/ldns.py
+%{py3_sitedir}/ldnsx.py
+%{py3_sitedir}/__pycache__/ldns.cpython-*.pyc
+%{py3_sitedir}/__pycache__/ldnsx.cpython-*.pyc
 %endif
 
 %files -n drill
